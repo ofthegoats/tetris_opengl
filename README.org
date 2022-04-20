@@ -1,6 +1,8 @@
 #+title: Tetris Opengl
 
-Tetris implementation in Opengl
+Tetris implementation in Opengl.
+
+The code is ugly, for now. Will fix later, maybe.
 
 * Depends
 
