@@ -1,0 +1,22 @@
+#+title: Tetris Opengl
+
+Tetris implementation in Opengl
+
+* Depends
+
+- opengl
+- glew
+- glfw3
+- C++
+
+* Building
+
+Makefile provided, uses clang but gcc might also work (try it and see)
+
+* Running
+
+Binary resulting from make goes into directory bin in working directory.
+
+* License
+
+BSD 3 clause, see LICENSE file
