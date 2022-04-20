@@ -3,12 +3,19 @@
 #include "enums.hpp"
 #include "playfield.hpp"
 
+#include <chrono>
 #include <utility>
 
 Tetromino::Tetromino(Playfield* p) { playfield = p; }
 
 void Tetromino::rotate(Rotation r)
 {
+    // do nothing if the last rotation was too recent to be intentional
+    auto currentTime = std::chrono::system_clock::now();
+    if (currentTime - lastRotation < rotationTimeout)
+        return;
+    else
+        lastRotation = currentTime;
     auto newR = r == Clockwise              ? (rotationIdentifier + 1) % 4
                 : (rotationIdentifier == 0) ? 3
                                             : rotationIdentifier - 1;
@@ -69,6 +76,12 @@ void Tetromino::moveDown()
 
 void Tetromino::moveHorizontal(int dir)
 {
+    // do nothing if the last movement was too recent to be intentional
+    auto currentTime = std::chrono::system_clock::now();
+    if (currentTime - lastHorizontalMovement < movementTimeout)
+        return;
+    else
+        lastHorizontalMovement = currentTime;
     std::array<std::pair<int, int>, 4> newTrueLocation;
     int d = (dir > 0) ? 1 : -1;
     for (int i = 0; i < 4; i++) {

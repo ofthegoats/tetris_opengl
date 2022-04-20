@@ -5,6 +5,7 @@
 #include "enums.hpp"
 
 #include <array>
+#include <chrono>
 #include <iostream>
 #include <utility>
 
@@ -35,6 +36,13 @@ protected:
 
     // whether the tetromino should now be just set down
     bool set = false;
+
+    // when the tetromino was last moved horizontally and rotated, as well as a timeout, so
+    // that it is possible to react to rotations
+    std::chrono::system_clock::time_point lastRotation;
+    std::chrono::system_clock::time_point lastHorizontalMovement;
+    std::chrono::duration<float> rotationTimeout = std::chrono::milliseconds(100);
+    std::chrono::duration<float> movementTimeout = std::chrono::milliseconds(100);
 
 public:
     Tetromino(Playfield* p);
