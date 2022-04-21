@@ -265,9 +265,7 @@ void processInput(GLFWwindow* win)
     }
     if (glfwGetKey(win, GLFW_KEY_C) == GLFW_PRESS) {
         if (carryPiece && swappable) {
-            auto tmp = std::move(activePiece);
-            activePiece = std::move(carryPiece);
-            carryPiece = std::move(tmp);
+            std::swap(activePiece, carryPiece);
             activePiece->resetPosition();
         } else if (swappable) {
             carryPiece = std::move(activePiece);
