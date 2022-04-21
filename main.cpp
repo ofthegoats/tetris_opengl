@@ -40,7 +40,8 @@ int main(int argc, char* argv[])
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    GLFWwindow* win = glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL", NULL, NULL);
+    glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
+    GLFWwindow* win = glfwCreateWindow(windowWidth, windowHeight, "Tetris", NULL, NULL);
     if (win == NULL) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
