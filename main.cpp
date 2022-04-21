@@ -165,7 +165,12 @@ int main(int argc, char* argv[])
         for (int x = 0; x < WIDTH; x++) {
             for (int y = 0; y < HEIGHT; y++) {
                 switch (grid.at(x).at(y)) {
-                case Empty: glUniform3f(colourLocation, 0.3f, 0.3f, 0.3f); break;
+                case Empty:
+                    if (x % 2 == 0)
+                        glUniform3f(colourLocation, 0.3f, 0.3f, 0.3f);
+                    else
+                        glUniform3f(colourLocation, 0.4f, 0.4f, 0.4f);
+                    break;
                 case Cyan: glUniform3f(colourLocation, 0.0f, 1.0f, 1.0f); break;
                 case Blue: glUniform3f(colourLocation, 0.0f, 0.0f, 1.0f); break;
                 case Orange: glUniform3f(colourLocation, 1.0f, 0.647f, 0.0f); break;
