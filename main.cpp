@@ -234,7 +234,8 @@ void framebuffer_size_callback(GLFWwindow* win, int width, int height)
 
 std::chrono::system_clock::time_point lastHarddrop;
 std::chrono::system_clock::time_point lastSoftdrop;
-std::chrono::duration<float> harddropTimeout = std::chrono::milliseconds(100);
+std::chrono::duration<float> harddropTimeout = std::chrono::milliseconds(300);
+std::chrono::duration<float> softdropTimeout = std::chrono::milliseconds(50);
 
 void processInput(GLFWwindow* win)
 {
@@ -249,7 +250,11 @@ void processInput(GLFWwindow* win)
         activePiece->rotate(Clockwise);
     if (glfwGetKey(win, GLFW_KEY_X) == GLFW_PRESS) activePiece->rotate(CounterClockwise);
     if (glfwGetKey(win, GLFW_KEY_DOWN) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_J) == GLFW_PRESS) {
-        // TODO SOFT DROP
+        auto currentTime = std::chrono::system_clock::now();
+        if (currentTime - lastSoftdrop >= softdropTimeout) {
+            activePiece->moveDownOrAdd();
+            lastSoftdrop = currentTime;
+        }
     }
     if (glfwGetKey(win, GLFW_KEY_SPACE) == GLFW_PRESS) {
         auto currentTime = std::chrono::system_clock::now();
