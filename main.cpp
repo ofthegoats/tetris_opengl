@@ -146,10 +146,7 @@ int main(int argc, char* argv[])
                 activePiece =
                   std::make_unique<Tetromino>(makePiece(generator.getNextPiece(), &playfield));
             }
-            playfield.print(activePiece.get());
             int inc = playfield.handleFullLines();
-            // // if any lines were cleared, print the new board
-            // if (inc > 0) playfield.print(activePiece.get());
         }
 
         // rendering
