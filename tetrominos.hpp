@@ -26,6 +26,7 @@ protected:
 
     // location on the playfield, initialized in each child class with the starting position
     std::array<std::pair<int, int>, 4> trueLocation;
+    std::array<std::pair<int, int>, 4> defaultLocation;
 
     // tetrominos have standard colours
     Square colour;
@@ -77,6 +78,9 @@ public:
 
     // get whether the piece is set/on ground
     bool isAdded();
+
+    // reset the position to the top of the board
+    void resetPosition();
 };
 
 // Below are definitions for all 7 tetrominos

@@ -121,14 +121,17 @@ std::array<std::pair<int, int>, 4> Tetromino::getTrueLocation() { return trueLoc
 
 bool Tetromino::isAdded() { return added; }
 
+void Tetromino::resetPosition() { trueLocation = defaultLocation; }
+
 IPiece::IPiece(Playfield* p) : Tetromino(p)
 {
     playfield = p;
     colour = Cyan;
-    trueLocation = {std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT - 1),
+    defaultLocation = {std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2) - 1, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2), HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2) + 1, HEIGHT - 1)};
+    trueLocation = defaultLocation;
     rotationBasicStates = {{
       {
         std::make_pair<int, int>(0, 2),
@@ -195,10 +198,11 @@ OPiece::OPiece(Playfield* p) : Tetromino(p)
 {
     playfield = p;
     colour = Yellow;
-    trueLocation = {std::make_pair<int, int>(WIDTH / 2, HEIGHT - 1),
+    defaultLocation = {std::make_pair<int, int>(WIDTH / 2, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2) - 1, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2), HEIGHT),
       std::make_pair<int, int>((WIDTH / 2) - 1, HEIGHT)};
+    trueLocation = defaultLocation;
 };
 
 // The O piece does not rotate, but infinite is still possible
@@ -244,10 +248,11 @@ JPiece::JPiece(Playfield* p) : Tetromino(p)
 {
     playfield = p;
     colour = Blue;
-    trueLocation = {std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT),
+    defaultLocation = {std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT),
       std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2) - 1, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2), HEIGHT - 1)};
+    trueLocation = defaultLocation;
     rotationBasicStates = {{
       {
         std::make_pair<int, int>(-1, 1),
@@ -281,10 +286,11 @@ LPiece::LPiece(Playfield* p) : Tetromino(p)
 {
     playfield = p;
     colour = Orange;
-    trueLocation = {std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT - 1),
+    defaultLocation = {std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2) - 1, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2), HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2), HEIGHT)};
+    trueLocation = defaultLocation;
     rotationBasicStates = {{
       {
         std::make_pair<int, int>(-1, 0),
@@ -318,10 +324,11 @@ ZPiece::ZPiece(Playfield* p) : Tetromino(p)
 {
     playfield = p;
     colour = Red;
-    trueLocation = {std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT),
+    defaultLocation = {std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT),
       std::make_pair<int, int>((WIDTH / 2) - 1, HEIGHT),
       std::make_pair<int, int>((WIDTH / 2) - 1, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2), HEIGHT - 1)};
+    trueLocation = defaultLocation;
     rotationBasicStates = {{
       {
         std::make_pair<int, int>(-1, 1),
@@ -355,10 +362,11 @@ SPiece::SPiece(Playfield* p) : Tetromino(p)
 {
     playfield = p;
     colour = Green;
-    trueLocation = {std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT - 1),
+    defaultLocation = {std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2) - 1, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2) - 1, HEIGHT),
       std::make_pair<int, int>((WIDTH / 2), HEIGHT)};
+    trueLocation = defaultLocation;
     rotationBasicStates = {{
       {
         std::make_pair<int, int>(-1, 0),
@@ -392,10 +400,11 @@ TPiece::TPiece(Playfield* p) : Tetromino(p)
 {
     playfield = p;
     colour = Pink;
-    trueLocation = {std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT - 1),
+    defaultLocation = {std::make_pair<int, int>((WIDTH / 2) - 2, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2) - 1, HEIGHT - 1),
       std::make_pair<int, int>((WIDTH / 2) - 1, HEIGHT),
       std::make_pair<int, int>((WIDTH / 2), HEIGHT - 1)};
+    trueLocation = defaultLocation;
     rotationBasicStates = {{
       {
         std::make_pair<int, int>(-1, 0),

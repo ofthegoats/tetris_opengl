@@ -12,7 +12,7 @@ Tetromino makePiece(Piece, Playfield*);
 
 void framebuffer_size_callback(GLFWwindow*, int, int);
 
-void processInput(GLFWwindow*, Tetromino*);
+void processInput(GLFWwindow*);
 
 GLsizei windowWidth = 800;
 GLsizei windowHeight = 1000;
@@ -32,6 +32,12 @@ const char* fShaderSource = "#version 330 core\n"
                             "{\n"
                             "FragColor = vec4(colour, 1.0f);\n"
                             "}";
+
+std::unique_ptr<Tetromino> activePiece;
+std::unique_ptr<Tetromino> carryPiece;
+bool swappable = true;
+Playfield playfield;
+RandomGenerator generator = RandomGenerator();
 
 int main(int argc, char* argv[])
 {
@@ -120,9 +126,6 @@ int main(int argc, char* argv[])
 
     int colourLocation = glGetUniformLocation(shader, "colour");
 
-    Playfield playfield;
-    RandomGenerator generator = RandomGenerator();
-    std::unique_ptr<Tetromino> activePiece;
     activePiece = std::make_unique<Tetromino>(makePiece(generator.getNextPiece(), &playfield));
     std::chrono::system_clock::time_point lastTimestamp = std::chrono::system_clock::now();
     std::chrono::system_clock::time_point currentTimestamp;
@@ -133,7 +136,7 @@ int main(int argc, char* argv[])
     // about being capable of infinite rotations or piece movement
     while (!playfield.isGameOver() && !glfwWindowShouldClose(win)) {
         // process inputs
-        processInput(win, activePiece.get());
+        processInput(win);
 
         // manage the game
         currentTimestamp = std::chrono::system_clock::now();
@@ -146,6 +149,7 @@ int main(int argc, char* argv[])
                 int inc = playfield.handleFullLines();
                 activePiece =
                   std::make_unique<Tetromino>(makePiece(generator.getNextPiece(), &playfield));
+                swappable = true;
             }
         }
 
@@ -232,29 +236,40 @@ std::chrono::system_clock::time_point lastHarddrop;
 std::chrono::system_clock::time_point lastSoftdrop;
 std::chrono::duration<float> harddropTimeout = std::chrono::milliseconds(100);
 
-void processInput(GLFWwindow* win, Tetromino* tetr)
+void processInput(GLFWwindow* win)
 {
     if (glfwGetKey(win, GLFW_KEY_ESCAPE) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_Q) == GLFW_PRESS)
         glfwSetWindowShouldClose(win, true);
     if (glfwGetKey(win, GLFW_KEY_LEFT) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_H) == GLFW_PRESS)
-        tetr->moveHorizontal(-1);
+        activePiece->moveHorizontal(-1);
     if (glfwGetKey(win, GLFW_KEY_RIGHT) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_L) == GLFW_PRESS)
-        tetr->moveHorizontal(1);
+        activePiece->moveHorizontal(1);
     if (glfwGetKey(win, GLFW_KEY_Z) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_UP) == GLFW_PRESS
         || glfwGetKey(win, GLFW_KEY_K))
-        tetr->rotate(Clockwise);
-    if (glfwGetKey(win, GLFW_KEY_X) == GLFW_PRESS) tetr->rotate(CounterClockwise);
+        activePiece->rotate(Clockwise);
+    if (glfwGetKey(win, GLFW_KEY_X) == GLFW_PRESS) activePiece->rotate(CounterClockwise);
     if (glfwGetKey(win, GLFW_KEY_DOWN) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_J) == GLFW_PRESS) {
         // TODO SOFT DROP
     }
     if (glfwGetKey(win, GLFW_KEY_SPACE) == GLFW_PRESS) {
         auto currentTime = std::chrono::system_clock::now();
         if (currentTime - lastHarddrop >= harddropTimeout) {
-            tetr->harddrop();
+            activePiece->harddrop();
             lastHarddrop = currentTime;
         }
     }
     if (glfwGetKey(win, GLFW_KEY_C) == GLFW_PRESS) {
-        // TODO carry/hold
+        if (carryPiece && swappable) {
+            auto tmp = std::move(activePiece);
+            activePiece = std::move(carryPiece);
+            carryPiece = std::move(tmp);
+            activePiece->resetPosition();
+        } else if (swappable) {
+            carryPiece = std::move(activePiece);
+            activePiece =
+              std::make_unique<Tetromino>(makePiece(generator.getNextPiece(), &playfield));
+            activePiece->resetPosition();
+        }
+        swappable = false;
     }
 }
