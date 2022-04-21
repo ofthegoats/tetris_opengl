@@ -121,7 +121,11 @@ std::array<std::pair<int, int>, 4> Tetromino::getTrueLocation() { return trueLoc
 
 bool Tetromino::isAdded() { return added; }
 
-void Tetromino::resetPosition() { trueLocation = defaultLocation; }
+void Tetromino::resetPosition()
+{
+    trueLocation = defaultLocation;
+    rotationIdentifier = 0;
+}
 
 IPiece::IPiece(Playfield* p) : Tetromino(p)
 {
