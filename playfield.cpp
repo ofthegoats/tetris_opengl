@@ -57,7 +57,7 @@ void Playfield::print(Tetromino* t)
 int Playfield::handleFullLines()
 {
     int linesCleared = 0;
-    for (int y = 0; y < HEIGHT; y++) {
+    for (int y = 0; y < HEIGHT;) {
         bool fullLine = true;
         for (int x = 0; x < WIDTH; x++) {
             if (grid.at(x).at(y) == Empty) fullLine = false;
@@ -73,6 +73,8 @@ int Playfield::handleFullLines()
             for (int x = 0; x < WIDTH; x++) {
                 grid.at(x).at(HEIGHT - 1) = Empty;
             }
+        } else {
+            y++;
         }
     }
     if (linesCleared > 0)
