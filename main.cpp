@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
     std::chrono::system_clock::time_point lastTimestamp = std::chrono::system_clock::now();
     std::chrono::system_clock::time_point currentTimestamp;
     std::chrono::duration<float> Dt;
-    std::chrono::duration<float> levelTime = std::chrono::milliseconds(500);
+    std::chrono::duration<float> levelTime = std::chrono::milliseconds(300);
     unsigned int score = 0;
     // within a second, this loop will repeat very many times, so don't worry too much
     // about being capable of infinite rotations or piece movement

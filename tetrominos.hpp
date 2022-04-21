@@ -41,8 +41,8 @@ protected:
     // that it is possible to react to rotations
     std::chrono::system_clock::time_point lastRotation;
     std::chrono::system_clock::time_point lastHorizontalMovement;
-    std::chrono::duration<float> rotationTimeout = std::chrono::milliseconds(100);
-    std::chrono::duration<float> movementTimeout = std::chrono::milliseconds(100);
+    std::chrono::duration<float> rotationTimeout = std::chrono::milliseconds(95);
+    std::chrono::duration<float> movementTimeout = std::chrono::milliseconds(95);
 
 public:
     Tetromino(Playfield* p);
