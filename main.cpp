@@ -141,29 +141,30 @@ int main(int argc, char* argv[])
 
         if (Dt >= levelTime) {
             lastTimestamp = currentTimestamp;
-            activePiece->moveDown();
-            if (activePiece->isSet()) {
-                playfield.addTetromino(activePiece.get());
+            activePiece->moveDownOrAdd();
+            if (activePiece->isAdded()) {
+                int inc = playfield.handleFullLines();
                 activePiece =
                   std::make_unique<Tetromino>(makePiece(generator.getNextPiece(), &playfield));
             }
-            int inc = playfield.handleFullLines();
         }
 
         // rendering
-        glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);  // base background colour
+        glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shader);
 
         auto grid = playfield.getGrid();
+        // active piece is not in the grid by default
         for (auto coord : activePiece->getTrueLocation()) {
             if (coord.first < WIDTH && coord.second < HEIGHT)
                 grid.at(coord.first).at(coord.second) = activePiece->getColour();
         }
+        // colours for different squares
         for (int x = 0; x < WIDTH; x++) {
             for (int y = 0; y < HEIGHT; y++) {
                 switch (grid.at(x).at(y)) {
-                case Empty:
+                case Empty:  // different coloured columns
                     if (x % 2 == 0)
                         glUniform3f(colourLocation, 0.3f, 0.3f, 0.3f);
                     else
@@ -177,19 +178,21 @@ int main(int argc, char* argv[])
                 case Pink: glUniform3f(colourLocation, 1.0f, 0.412f, 0.705f); break;
                 case Red: glUniform3f(colourLocation, 1.0f, 0.0f, 0.0f); break;
                 }
-                // BL
+                // calculations to get corners in normalised coordinate system
+                // Bottom Left
                 vertices[0] = -1 + (double)(2 * x) / WIDTH;
                 vertices[1] = -1 + (double)(2 * y) / HEIGHT;
-                // TL
+                // Top Left
                 vertices[2] = -1 + (double)(2 * x) / WIDTH;
                 vertices[3] = -1 + (double)(2 * y + 2) / HEIGHT;
-                // TR
+                // Top Right
                 vertices[4] = -1 + (double)(2 * x + 2) / WIDTH;
                 vertices[5] = -1 + (double)(2 * y + 2) / HEIGHT;
-                // BR
+                // Bottom Right
                 vertices[6] = -1 + (double)(2 * x + 2) / WIDTH;
                 vertices[7] = -1 + (double)(2 * y) / HEIGHT;
 
+                // draw in the current square
                 glBindBuffer(GL_ARRAY_BUFFER, VBO);
                 glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
                 glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, 2 * sizeof(double), (void*)0);
@@ -225,6 +228,10 @@ void framebuffer_size_callback(GLFWwindow* win, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+std::chrono::system_clock::time_point lastHarddrop;
+std::chrono::system_clock::time_point lastSoftdrop;
+std::chrono::duration<float> harddropTimeout = std::chrono::milliseconds(100);
+
 void processInput(GLFWwindow* win, Tetromino* tetr)
 {
     if (glfwGetKey(win, GLFW_KEY_ESCAPE) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_Q) == GLFW_PRESS)
@@ -233,8 +240,21 @@ void processInput(GLFWwindow* win, Tetromino* tetr)
         tetr->moveHorizontal(-1);
     if (glfwGetKey(win, GLFW_KEY_RIGHT) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_L) == GLFW_PRESS)
         tetr->moveHorizontal(1);
-    if (glfwGetKey(win, GLFW_KEY_UP) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_K) == GLFW_PRESS)
+    if (glfwGetKey(win, GLFW_KEY_Z) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_UP) == GLFW_PRESS
+        || glfwGetKey(win, GLFW_KEY_K))
         tetr->rotate(Clockwise);
-    if (glfwGetKey(win, GLFW_KEY_DOWN) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_J) == GLFW_PRESS)
-        tetr->rotate(CounterClockwise);
+    if (glfwGetKey(win, GLFW_KEY_X) == GLFW_PRESS) tetr->rotate(CounterClockwise);
+    if (glfwGetKey(win, GLFW_KEY_DOWN) == GLFW_PRESS || glfwGetKey(win, GLFW_KEY_J) == GLFW_PRESS) {
+        // TODO SOFT DROP
+    }
+    if (glfwGetKey(win, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        auto currentTime = std::chrono::system_clock::now();
+        if (currentTime - lastHarddrop >= harddropTimeout) {
+            tetr->harddrop();
+            lastHarddrop = currentTime;
+        }
+    }
+    if (glfwGetKey(win, GLFW_KEY_C) == GLFW_PRESS) {
+        // TODO carry/hold
+    }
 }

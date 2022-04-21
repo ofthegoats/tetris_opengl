@@ -10,6 +10,7 @@ Tetromino::Tetromino(Playfield* p) { playfield = p; }
 
 void Tetromino::rotate(Rotation r)
 {
+    if (!moveable) return;
     // do nothing if the last rotation was too recent to be intentional
     auto currentTime = std::chrono::system_clock::now();
     if (currentTime - lastRotation < rotationTimeout)
@@ -60,22 +61,37 @@ void Tetromino::rotate(Rotation r)
     }
 }
 
-void Tetromino::moveDown()
+void Tetromino::moveDownOrAdd()
 {
     // check if there is a solid beneath any of the solid squares
+    bool squareBelow = false;
     for (auto coord : trueLocation) {
-        if (coord.second == 0 || playfield->squareFull(coord.first, coord.second - 1)) set = true;
+        if (coord.second == 0 || playfield->squareFull(coord.first, coord.second - 1))
+            squareBelow = true;
     }
     // if there isn't, move everything down by one
-    if (!set) {
+    if (set && squareBelow) {
+        playfield->addTetromino(this);
+        added = true;
+    } else if (!squareBelow) {
         for (auto i = trueLocation.begin(); i < trueLocation.end(); i++) {
             i->second--;
         }
     }
+    for (auto coord : trueLocation) {
+        if (playfield->squareFull(coord.first, coord.second - 1)) set = true;
+    }
+}
+
+void Tetromino::harddrop()
+{
+    while (!set)
+        moveDownOrAdd();
 }
 
 void Tetromino::moveHorizontal(int dir)
 {
+    if (!moveable) return;
     // do nothing if the last movement was too recent to be intentional
     auto currentTime = std::chrono::system_clock::now();
     if (currentTime - lastHorizontalMovement < movementTimeout)
@@ -93,14 +109,17 @@ void Tetromino::moveHorizontal(int dir)
         if (playfield->squareFull(newTrueLocation.at(i).first, newTrueLocation.at(i).second))
             legal = false;
     }
-    if (legal) trueLocation = newTrueLocation;
+    if (legal) {
+        trueLocation = newTrueLocation;
+        set = false;
+    }
 }
 
 Square Tetromino::getColour() { return colour; }
 
 std::array<std::pair<int, int>, 4> Tetromino::getTrueLocation() { return trueLocation; }
 
-bool Tetromino::isSet() { return set; }
+bool Tetromino::isAdded() { return added; }
 
 IPiece::IPiece(Playfield* p) : Tetromino(p)
 {

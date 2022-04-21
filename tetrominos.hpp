@@ -34,8 +34,17 @@ protected:
     // rotate, whether it needs to kick etc.
     Playfield* playfield;
 
-    // whether the tetromino should now be just set down
+    // tracks whether there was a full square underneath the piece, on the last turn
+    // a horizontal movement or rotation sets this to false, so infinite is possible
+    // if there is a piece below it on the current turn & on the last turn (barring
+    // rotations and movement), then the piece is added to the playfield
     bool set = false;
+
+    // whether the tetromino has been added to the playfield
+    bool added = false;
+
+    // set to false after a hard drop
+    bool moveable = true;
 
     // when the tetromino was last moved horizontally and rotated, as well as a timeout, so
     // that it is possible to react to rotations
@@ -51,7 +60,10 @@ public:
     void rotate(Rotation);
 
     // move the piece down by one
-    void moveDown();
+    void moveDownOrAdd();
+
+    // move the piece as far down as possible, then make it unmoveable
+    void harddrop();
 
     // move the piece one horizontally, left or right
     // positive argument => right, negative => left
@@ -64,7 +76,7 @@ public:
     std::array<std::pair<int, int>, 4> getTrueLocation();
 
     // get whether the piece is set/on ground
-    bool isSet();
+    bool isAdded();
 };
 
 // Below are definitions for all 7 tetrominos
