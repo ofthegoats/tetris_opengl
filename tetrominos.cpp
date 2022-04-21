@@ -119,6 +119,8 @@ Square Tetromino::getColour() { return colour; }
 
 std::array<std::pair<int, int>, 4> Tetromino::getTrueLocation() { return trueLocation; }
 
+std::array<std::pair<int, int>, 4> Tetromino::getDefaultLayout() { return rotationBasicStates[0]; }
+
 bool Tetromino::isAdded() { return added; }
 
 void Tetromino::resetPosition()

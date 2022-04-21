@@ -73,8 +73,9 @@ public:
     // get the colour of a piece
     Square getColour();
 
-    // get the true location of the piece
+    // get the location of the piece
     std::array<std::pair<int, int>, 4> getTrueLocation();
+    std::array<std::pair<int, int>, 4> getDefaultLayout();
 
     // get whether the piece is set/on ground
     bool isAdded();
