@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <chrono>
 #include <iostream>
+#include <list>
 #include <memory>
 
 Tetromino makePiece(Piece, Playfield*);
@@ -35,6 +36,7 @@ const char* fShaderSource = "#version 330 core\n"
 
 std::unique_ptr<Tetromino> activePiece;
 std::unique_ptr<Tetromino> carryPiece;
+std::list<std::unique_ptr<Tetromino>> upcoming;
 bool swappable = true;
 Playfield playfield;
 RandomGenerator generator = RandomGenerator();
@@ -126,7 +128,14 @@ int main(int argc, char* argv[])
 
     int colourLocation = glGetUniformLocation(shader, "colour");
 
-    activePiece = std::make_unique<Tetromino>(makePiece(generator.getNextPiece(), &playfield));
+    for (int i = 0; i < 4; i++)
+        upcoming.push_back(
+          std::make_unique<Tetromino>(makePiece(generator.getNextPiece(), &playfield)));
+
+    activePiece = std::move(upcoming.front());
+    upcoming.pop_front();
+    upcoming.push_back(
+      std::make_unique<Tetromino>(makePiece(generator.getNextPiece(), &playfield)));
     std::chrono::system_clock::time_point lastTimestamp = std::chrono::system_clock::now();
     std::chrono::system_clock::time_point currentTimestamp;
     std::chrono::duration<float> Dt;
@@ -147,8 +156,10 @@ int main(int argc, char* argv[])
             activePiece->moveDownOrAdd();
             if (activePiece->isAdded()) {
                 int inc = playfield.handleFullLines();
-                activePiece =
-                  std::make_unique<Tetromino>(makePiece(generator.getNextPiece(), &playfield));
+                activePiece = std::move(upcoming.front());
+                upcoming.pop_front();
+                upcoming.push_back(
+                  std::make_unique<Tetromino>(makePiece(generator.getNextPiece(), &playfield)));
                 swappable = true;
             }
         }
